@@ -11,6 +11,7 @@
 - [ ] Basic Auth middleware
 - [ ] Console app
 - [ ] Lumen integration
+- [ ] remove dotenv from App bootstrap
 - [ ] Produce yaml & xml response
 - [ ] Update - README
 

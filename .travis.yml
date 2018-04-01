@@ -25,6 +25,6 @@ before_script:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
 
 script:
-  - echo "DB_HOST=\nDB_NAME=\nDB_USER=\nDB_PASS=" > .env
+  - echo "DB_HOST=host\nDB_NAME=name\nDB_USER=user\nDB_PASS=pass" > .env
   - vendor/bin/phpcs --standard=psr2 src/
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
