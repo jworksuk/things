@@ -17,3 +17,12 @@
 
 [ico-travis]: https://img.shields.io/travis/jworksuk/things/master.svg?style=flat-square
 [link-travis]: https://travis-ci.org/jworksuk/things
+
+
+```shell
+docker exec -it things_app composer install
+```
+
+```shell
+cp .env.example .env
+```

@@ -12,7 +12,7 @@ use Things\Domain\Model\User\UserRepository;
  */
 class SqlUserRepository extends SqlRepository implements UserRepository
 {
-    const DATE_FORMAT = 'Y-m-d';
+    const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * @param UserId $userId
@@ -57,14 +57,13 @@ class SqlUserRepository extends SqlRepository implements UserRepository
     public function save(User $user): bool
     {
         $sql = 'INSERT INTO users
-            (id, email, password, activated_at, updated_at, created_at)
+            (id, email, password, updated_at, created_at)
             VALUES
-            (:id, :email, :password, :activated_at, :updated_at, :created_at)';
+            (:id, :email, :password, :updated_at, :created_at)';
         $this->execute($sql, [
             'id' => $user->getUserId()->getId(),
             'email' => $user->getEmail(),
             'password' => $user->getPassword(),
-            'activated_at' => null,
             'updated_at' => $user->getUpdatedAt()->format(self::DATE_FORMAT),
             'created_at' => $user->getCreatedAt()->format(self::DATE_FORMAT),
         ]);

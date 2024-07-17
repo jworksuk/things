@@ -7,40 +7,26 @@ use Things\Domain\Model\User\UserRepository;
 use Things\Domain\Service\PasswordHashing;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 class UserFromBasicAuthMiddleware
 {
-    /**
-     * @var UserRepository
-     */
-    protected $userRepository;
-
-    /**
-     * @var PasswordHashing
-     */
-    protected $passwordHashing;
-
     /**
      * UserFromBasicAuthMiddleware constructor.
      * @param UserRepository $userRepository
      * @param PasswordHashing $passwordHashing
      */
-    public function __construct(UserRepository $userRepository, PasswordHashing $passwordHashing)
+    public function __construct(protected UserRepository $userRepository, protected PasswordHashing $passwordHashing)
     {
-        $this->userRepository = $userRepository;
-        $this->passwordHashing = $passwordHashing;
     }
 
     /**
-     * Example middleware invokable class
-     *
-     * @param  Request $request PSR7 request
-     * @param  Response $response PSR7 response
-     * @param  callable $next Next middleware
+     * @param Request $request
+     * @param RequestHandler $handler
      * @return Response
      * @throws HttpException
      */
-    public function __invoke(Request $request, Response $response, $next)
+    public function __invoke(Request $request, RequestHandler $handler): Response
     {
         $severParams = $request->getServerParams();
         $email = ($severParams['PHP_AUTH_USER']) ?? '';
@@ -58,8 +44,6 @@ class UserFromBasicAuthMiddleware
 
         $request = $request->withAttribute('user', $user);
 
-        $response = $next($request, $response);
-
-        return $response;
+        return $handler->handle($request);
     }
 }

@@ -15,24 +15,14 @@ use Things\Application\Service\ThingService;
 class ThingController
 {
     /**
-     * @var ThingService
-     */
-    protected $thingService;
-
-    /**
-     * @var ResponseTransformer
-     */
-    protected $responseTransformer;
-
-    /**
      * ThingController constructor.
      * @param ThingService $thingService
      * @param ResponseTransformer $responseTransformer
      */
-    public function __construct(ThingService $thingService, ResponseTransformer $responseTransformer)
-    {
-        $this->thingService = $thingService;
-        $this->responseTransformer = $responseTransformer;
+    public function __construct(
+        protected ThingService $thingService,
+        protected ResponseTransformer $responseTransformer
+    ) {
     }
 
     /**
@@ -80,13 +70,13 @@ class ThingController
      * @throws \Things\Domain\Model\Thing\ThingCannotBeAccessedByUserException
      * @throws \Things\Domain\Model\Thing\ThingNotFoundException
      */
-    public function read(Request $request, Response $response, $args): Response
+    public function read(Request $request, Response $response, string $thingId): Response
     {
         return $this->responseTransformer->transform(
             $response,
             [
                 $this->thingService->getThingById(
-                    new ThingId($args['id']),
+                    new ThingId($thingId),
                     $request->getAttribute('user')->getUserId()
                 )
             ]
@@ -101,7 +91,7 @@ class ThingController
      * @throws \Things\Domain\Model\Thing\ThingCannotBeAccessedByUserException
      * @throws \Things\Domain\Model\Thing\ThingNotFoundException
      */
-    public function update(Request $request, Response $response, array $args): Response
+    public function update(Request $request, Response $response, string $thingId): Response
     {
         $body = $request->getParsedBody();
 
@@ -109,7 +99,7 @@ class ThingController
             $response,
             [
                 $this->thingService->updateThing(
-                    new ThingId($args['id']),
+                    new ThingId($thingId),
                     $request->getAttribute('user')->getUserId(),
                     ($body['name']) ?? null,
                     ($body['description']) ?? null
@@ -126,13 +116,13 @@ class ThingController
      * @throws \Things\Domain\Model\Thing\ThingCannotBeAccessedByUserException
      * @throws \Things\Domain\Model\Thing\ThingNotFoundException
      */
-    public function delete(Request $request, Response $response, array $args): Response
+    public function delete(Request $request, Response $response, string $thingId): Response
     {
         return $this->responseTransformer->transform(
             $response,
             [
                 $this->thingService->deleteThingById(
-                    new ThingId($args['id']),
+                    new ThingId($thingId),
                     $request->getAttribute('user')->getUserId()
                 )
             ]

@@ -20,7 +20,7 @@ class SqlThingRepository extends SqlRepository implements ThingRepository, Thing
      */
     public function findAllByUserId(UserId $userId)
     {
-        $st = $this->execute('SELECT * FROM things WHERE userId = :userId', [
+        $st = $this->execute('SELECT * FROM things WHERE user_id = :userId', [
             'userId' => $userId->getId(),
         ]);
 
@@ -28,7 +28,7 @@ class SqlThingRepository extends SqlRepository implements ThingRepository, Thing
             function (array $row) {
                 return $this->buildThing(
                     new ThingID($row['id']),
-                    new UserId($row['userId']),
+                    new UserId($row['user_id']),
                     $row['name'],
                     $row['description']
                 );
@@ -50,7 +50,7 @@ class SqlThingRepository extends SqlRepository implements ThingRepository, Thing
         if ($row = $st->fetch()) {
             return $this->buildThing(
                 new ThingID($row['id']),
-                new UserId($row['userId']),
+                new UserId($row['user_id']),
                 $row['name'],
                 $row['description']
             );
@@ -84,12 +84,12 @@ class SqlThingRepository extends SqlRepository implements ThingRepository, Thing
     public function save(Thing $thing): bool
     {
         $sql = 'INSERT INTO things
-            (id, userId, name, description)
+            (id, user_id, name, description)
             VALUES
-            (:id, :userId, :name, :description)';
+            (:id, :user_id, :name, :description)';
         $this->execute($sql, [
             'id' => $thing->getThingId()->getId(),
-            'userId' => $thing->getUserId()->getId(),
+            'user_id' => $thing->getUserId()->getId(),
             'name' => $thing->getName(),
             'description' => $thing->getDescription(),
         ]);
