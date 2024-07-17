@@ -1,28 +1,34 @@
 # Things
 
-[![Build Status][ico-travis]][link-travis]
+## Installation
 
-### TODO
-
-- [ ] Email should be Value Object
-- [ ] Events
-- [ ] Add Doctrine
-- [ ] Get User From Request Middleware
-- [ ] Basic Auth middleware
-- [ ] Console app
-- [ ] Lumen integration
-- [ ] remove dotenv from App bootstrap
-- [ ] Produce yaml & xml response
-- [ ] Update - README
-
-[ico-travis]: https://img.shields.io/travis/jworksuk/things/master.svg?style=flat-square
-[link-travis]: https://travis-ci.org/jworksuk/things
-
+Clone the repo locally:
 
 ```shell
-docker exec -it things_app composer install
+git clone git@github.com:jworksuk/things.git
+cd things
 ```
+
+Copy .env file
 
 ```shell
 cp .env.example .env
 ```
+
+Build and start the Docker containers:
+```shell
+docker compose up --build -d
+```
+
+Install Composer dependencies:
+
+```shell
+docker compose exec -T php-fpm composer install
+```
+
+Run database migrations
+
+```shell
+docker compose exec -T php-fpm composer run db-bootstrap
+```
+
