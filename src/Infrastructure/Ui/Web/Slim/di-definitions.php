@@ -1,8 +1,9 @@
 <?php
 
-use Bugsnag\Client;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Things\Application\DataTransformer\Response\ResponseTransformer;
-use Things\Application\Exception\HttpException;
 use Things\Application\Http\Controller\ThingController;
 use Things\Application\Http\Controller\UserController;
 use Things\Application\Http\Middleware\UserFromBasicAuthMiddleware;
@@ -14,23 +15,19 @@ use Things\Domain\Service\PasswordHashing;
 use Things\Infrastructure\Domain\Service\Md5PasswordHashing;
 use Things\Infrastructure\Persistence\Sql\SqlThingRepository;
 use Things\Infrastructure\Persistence\Sql\SqlUserRepository;
-use Things\Infrastructure\Ui\Web\Slim\Handler;
 use Psr\Container\ContainerInterface as Container;
 
 return [
-    'config' => [
-        'displayErrorDetails' => true,
-        'addContentLengthHeader' => false,
-        'db' => [
-            'host' => $_SERVER['DB_HOST'],
-            'user' => $_SERVER['DB_USER'],
-            'pass' => $_SERVER['DB_PASS'],
-            'name' => $_SERVER['DB_NAME'],
-        ]
+    'displayErrorDetails' => true,
+    'addContentLengthHeader' => false,
+    'db' => [
+        'host' => $_SERVER['DB_HOST'],
+        'user' => $_SERVER['DB_USER'],
+        'pass' => $_SERVER['DB_PASS'],
+        'name' => $_SERVER['DB_NAME'],
     ],
     'connection' => function (Container $c) {
-        $config = $c->get('config');
-        $db = $config['db'];
+        $db = $c->get('db');
 
         return new PDO(
             "mysql:host=". $db['host'] .";dbname=".$db['name'],
@@ -50,13 +47,11 @@ return [
     ThingRepository::class => function (Container  $container) {
         return new SqlThingRepository($container->get('connection'));
     },
-    // @codeCoverageIgnoreEnd
 
     PasswordHashing::class => function () {
         return new Md5PasswordHashing($_SERVER['APP_SALT']);
     },
 
-    // Domain Services
     ThingService::class => function (Container $container) {
         return new ThingService(
             $container->get(ThingRepository::class)
@@ -70,7 +65,6 @@ return [
         );
     },
 
-    // Controllers
     ThingController::class => function (Container $container) {
         return new ThingController(
             $container->get(ThingService::class),
@@ -93,40 +87,12 @@ return [
         );
     },
 
-    Handler::class => function (Container $container) {
-        $bugsnag = Client::make($_SERVER['BUGSNAG_API_KEY']);
-        $bugsnag->setReleaseStage('development');
-
-        return new Handler(
-            $container[ResponseTransformer::class],
-            $bugsnag
-        );
+    LoggerInterface::class => function (Container $container) {
+        $logger = new Logger('app');
+        $logger->pushHandler(new RotatingFileHandler(
+            __DIR__ . '/../../../../../storage/logs/app.log',
+            0
+        ));
+        return $logger;
     },
-
-    'errorHandler' => function (Container $container) {
-        return $container[Handler::class];
-    },
-
-    'notFoundHandler' => function () {
-        throw new HttpException(404);
-    },
-
-//    'notAllowedHandler' => function(Container $container) {
-//        return function (Request $request, Response $response, $methods) use ($container) {
-//            $code = 405;
-//            $response = $response->withStatus($code)
-//                ->withHeader('Allow', implode(', ', $methods))
-//                ->withHeader('Content-type', $container[ResponseTransformer::class]::CONTENT_TYPE);
-//            return $container[ResponseTransformer::class]->transform(
-//                $response,
-//                [],
-//                [
-//                    [
-//                        'code' => $code,
-//                        'message' => 'Method must be one of: ' . implode(', ', $methods)
-//                    ]
-//                ]
-//            );
-//        };
-//    },
 ];

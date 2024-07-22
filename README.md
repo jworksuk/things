@@ -23,12 +23,18 @@ docker compose up --build -d
 Install Composer dependencies:
 
 ```shell
-docker compose exec -T php-fpm composer install
+docker compose exec -it php-fpm composer install
 ```
 
 Run database migrations
 
 ```shell
-docker compose exec -T php-fpm composer run db-bootstrap
+docker compose exec -it php-fpm composer run db-bootstrap
 ```
 
+## TODO
+- [ ] Error handling
+- [ ] Auth Token
+- [ ] Events
+- [ ] Console app
+- [ ] React App

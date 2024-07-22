@@ -16,6 +16,7 @@ class Api extends Application
     public static function bootstrap(): App
     {
         $app = parent::bootstrap();
+        $app->setBasePath('/api');
 
         $container = $app->getContainer();
 

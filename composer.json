@@ -18,7 +18,8 @@
         "bugsnag/bugsnag": "^3.29",
         "php-di/slim-bridge": "^3.4",
         "ext-pdo": "*",
-        "robmorgan/phinx": "^0.16.1"
+        "robmorgan/phinx": "^0.16.1",
+        "monolog/monolog": "^3.7"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.2",

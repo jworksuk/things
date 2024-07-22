@@ -29,11 +29,9 @@ class Application extends App
         $dotenv->load();
         $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS']);
 
-
-
-//        $whoops = new Run;
-//        $whoops->pushHandler(new PrettyPageHandler);
-//        $whoops->register();
+        $whoops = new Run;
+        $whoops->pushHandler(new PrettyPageHandler);
+        $whoops->register();
 
         $app =  Bridge::create(static::buildContainer());
 
@@ -49,7 +47,7 @@ class Application extends App
     protected static function buildContainer(): Container
     {
         $builder = new ContainerBuilder();
-        return $builder->useAutowiring(false)
+        return $builder->useAutowiring(true)
             ->useAttributes(false)
             ->addDefinitions(__DIR__ . '/di-definitions.php')
             ->build();
